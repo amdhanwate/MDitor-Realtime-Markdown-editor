@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import font , filedialog
-import tkinter
+import markdown 
 from markdown2 import Markdown
 from tkhtmlview import HTMLLabel
 from tkinter import messagebox as mbox
@@ -44,6 +44,20 @@ class Window(Frame):
             except:
                 mbox.showerror("Error Opening Selected File" , "Oops!, The file you selected : {} can not be opened!".format(openfilename))
 
+    def md2html(self):
+        filedata = markdown.markdown(self.inputeditor.get("1.0" , END))
+        savefilename = filedialog.asksaveasfilename(filetypes = (("HTML File", "*.html"),
+                                                                  ("Text File", "*.txt")) , title="Save HTML File")
+
+        if savefilename:
+            try:
+                f = open(savefilename , "w")
+                f.write(filedata)
+            except:
+                mbox.showerror("Error Saving File" , "Oops!, The File : {} can not be saved!".format(savefilename))
+    def saveonly(self, event):
+        filedata = markdown.markdown(self.inputeditor.get("1.0" , END))
+        
     def init_window(self):
         self.master.title("MDitor")
         self.pack(fill=BOTH, expand=1)
@@ -63,6 +77,8 @@ class Window(Frame):
         self.inputeditor.bind('<Control-s>', self.savefile)
         # ctrl-o shortcut
         self.inputeditor.bind('<Control-o>', self.openfile)
+        # ctrl-h shortcut
+        self.inputeditor.bind('<Control-h>', self.md2html)
 
         # File and Open
         self.mainmenu = Menu(self)
@@ -72,6 +88,7 @@ class Window(Frame):
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=self.quit)
         self.mainmenu.add_cascade(label="File", menu=self.filemenu)
+        self.mainmenu.add_cascade(label="Save HTML", command=self.md2html)
         self.master.config(menu=self.mainmenu)
 
 
